@@ -21,7 +21,7 @@ void run_inference(Ort::Session& onnx_session, Ort::IoBinding& io_binding, const
 	io_binding.BindInput(input_name, src_tensor);
 	onnx_session.Run(Ort::RunOptions{nullptr}, io_binding);
 	std::vector<Ort::Value> outputValues = io_binding.GetOutputValues();
-    const cv::Mat keypoints_with_scores(17, 3, CV_32FC1, const_cast<float*>(outputValues[0].GetTensorData<float>()));
+	const cv::Mat keypoints_with_scores(17, 3, CV_32FC1, const_cast<float*>(outputValues[0].GetTensorData<float>()));
 	
 	//Postprocess:Calc Keypoint
 	keypoints->clear();
@@ -43,23 +43,23 @@ cv::Mat draw_debug(const cv::Mat& image, double elapsed_time, float keypoint_sco
 
 	std::vector<std::tuple<int, int, cv::Scalar> > connect_list = {
 		std::make_tuple(0, 1, cv::Scalar(255, 0, 0)),  // nose → left eye
-        std::make_tuple(0, 2, cv::Scalar(0, 0, 255)),  // nose → right eye
-        std::make_tuple(1, 3, cv::Scalar(255, 0, 0)),  // left eye → left ear
-        std::make_tuple(2, 4, cv::Scalar(0, 0, 255)),  // right eye → right ear
-        std::make_tuple(0, 5, cv::Scalar(255, 0, 0)),  // nose → left shoulder
-        std::make_tuple(0, 6, cv::Scalar(0, 0, 255)),  // nose → right shoulder
-        std::make_tuple(5, 6, cv::Scalar(0, 255, 0)),  // left shoulder → right shoulder
-        std::make_tuple(5, 7, cv::Scalar(255, 0, 0)),  // left shoulder → left elbow
-        std::make_tuple(7, 9, cv::Scalar(255, 0, 0)),  // left elbow → left wrist
-        std::make_tuple(6, 8, cv::Scalar(0, 0, 255)),  // right shoulder → right elbow
-        std::make_tuple(8, 10, cv::Scalar(0, 0, 255)),  // right elbow → right wrist
-        std::make_tuple(11, 12, cv::Scalar(0, 255, 0)),  // left hip → right hip
-        std::make_tuple(5, 11, cv::Scalar(255, 0, 0)),  // left shoulder → left hip
-        std::make_tuple(11, 13, cv::Scalar(255, 0, 0)),  // left hip → left knee
-        std::make_tuple(13, 15, cv::Scalar(255, 0, 0)),  // left knee → left ankle
-        std::make_tuple(6, 12, cv::Scalar(0, 0, 255)),  // right shoulder → right hip
-        std::make_tuple(12, 14, cv::Scalar(0, 0, 255)),  // right hip → right knee
-        std::make_tuple(14, 16, cv::Scalar(0, 0, 255)),  // right knee → right ankle
+		std::make_tuple(0, 2, cv::Scalar(0, 0, 255)),  // nose → right eye
+		std::make_tuple(1, 3, cv::Scalar(255, 0, 0)),  // left eye → left ear
+		std::make_tuple(2, 4, cv::Scalar(0, 0, 255)),  // right eye → right ear
+		std::make_tuple(0, 5, cv::Scalar(255, 0, 0)),  // nose → left shoulder
+		std::make_tuple(0, 6, cv::Scalar(0, 0, 255)),  // nose → right shoulder
+		std::make_tuple(5, 6, cv::Scalar(0, 255, 0)),  // left shoulder → right shoulder
+		std::make_tuple(5, 7, cv::Scalar(255, 0, 0)),  // left shoulder → left elbow
+		std::make_tuple(7, 9, cv::Scalar(255, 0, 0)),  // left elbow → left wrist
+		std::make_tuple(6, 8, cv::Scalar(0, 0, 255)),  // right shoulder → right elbow
+		std::make_tuple(8, 10, cv::Scalar(0, 0, 255)),  // right elbow → right wrist
+		std::make_tuple(11, 12, cv::Scalar(0, 255, 0)),  // left hip → right hip
+		std::make_tuple(5, 11, cv::Scalar(255, 0, 0)),  // left shoulder → left hip
+		std::make_tuple(11, 13, cv::Scalar(255, 0, 0)),  // left hip → left knee
+		std::make_tuple(13, 15, cv::Scalar(255, 0, 0)),  // left knee → left ankle
+		std::make_tuple(6, 12, cv::Scalar(0, 0, 255)),  // right shoulder → right hip
+		std::make_tuple(12, 14, cv::Scalar(0, 0, 255)),  // right hip → right knee
+		std::make_tuple(14, 16, cv::Scalar(0, 0, 255)),  // right knee → right ankle
 	};
 
 	//Connect Line
@@ -67,10 +67,10 @@ cv::Mat draw_debug(const cv::Mat& image, double elapsed_time, float keypoint_sco
 		int index01 = std::get<0>(connection);
 		int index02 = std::get<1>(connection);
 		cv::Scalar color = std::get<2>(connection);
-        if(scores[index01] > keypoint_score_th && scores[index02] > keypoint_score_th) {
-            cv::Point point01 = keypoints[index01];
-            cv::Point point02 = keypoints[index02];
-            cv::line(debug_image, point01, point02, color, 2);
+		if(scores[index01] > keypoint_score_th && scores[index02] > keypoint_score_th) {
+			cv::Point point01 = keypoints[index01];
+			cv::Point point02 = keypoints[index02];
+			cv::line(debug_image, point01, point02, color, 2);
 		}
 	}
 
@@ -78,13 +78,13 @@ cv::Mat draw_debug(const cv::Mat& image, double elapsed_time, float keypoint_sco
 	for(size_t i = 0; i < keypoints.size(); i++) {
 		cv::Point keypoint = keypoints[i];
 		float score = scores[i];
-        if(score > keypoint_score_th)
-            cv::circle(debug_image, keypoint, 3, cv::Scalar(0, 255, 0), -1);
+		if(score > keypoint_score_th)
+			cv::circle(debug_image, keypoint, 3, cv::Scalar(0, 255, 0), -1);
 	}
 
 	//Inference elapsed time
 	std::string str = "Elapsed Time : "+std::to_string(elapsed_time*1000)+"ms";
-    cv::putText(debug_image, str, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+	cv::putText(debug_image, str, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
 
 	return debug_image;
 }
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 	}
 
 	//Initialize video capture
-    cv::VideoCapture cap;
+	cv::VideoCapture cap;
 	cap.open(deviceID);
 	if (!cap.isOpened()) {
 		printf("can not open device %d\n", deviceID);
@@ -167,15 +167,15 @@ int main(int argc, char **argv)
 	
 	//Creates the onnx runtime environment
 	Ort::Env env(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, "movenet");
-    Ort::SessionOptions sessionOptions;
-    sessionOptions.SetIntraOpNumThreads(1);
-    
-    //Activates the CUDA backend
-    if(use_CUDA) {
-    	OrtCUDAProviderOptions cuda_options;
-    	sessionOptions.AppendExecutionProvider_CUDA(cuda_options);
-    }
-    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
+	Ort::SessionOptions sessionOptions;
+	sessionOptions.SetIntraOpNumThreads(1);
+	
+	//Activates the CUDA backend
+	if(use_CUDA) {
+		OrtCUDAProviderOptions cuda_options;
+		sessionOptions.AppendExecutionProvider_CUDA(cuda_options);
+	}
+	sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
 
 	//Load model
 	#ifdef _WIN32
@@ -206,17 +206,17 @@ int main(int argc, char **argv)
 	char *output_name = onnx_session.GetOutputName(0, allocator);
 	
 	io_binding.BindOutput(output_name, memoryInfo);
-    
-    cv::Mat frame;
-    while(true) 
+	
+	cv::Mat frame;
+	while(true) 
 	{
 		auto start_time = std::chrono::steady_clock::now();
 		//Capture read
 		cap.read(frame);
 		if (frame.empty()) {
-            printf("error : empty frame grabbed");
-            break;
-        }
+			printf("error : empty frame grabbed");
+			break;
+		}
 
 		cv::Mat debug_image = frame.clone();
 
@@ -230,12 +230,12 @@ int main(int argc, char **argv)
 		double elapsed_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count()/1000000.0;
 
 		//Draw 
-        debug_image = draw_debug(debug_image, elapsed_time, keypoint_score_th, keypoints, scores);
+		debug_image = draw_debug(debug_image, elapsed_time, keypoint_score_th, keypoints, scores);
 
-        cv::imshow("MoveNet(singlepose) Demo", debug_image);
-        int key = cv::waitKey(10);
-        if(key == 27 || key == 'q')
-        	break;
+		cv::imshow("MoveNet(singlepose) Demo", debug_image);
+		int key = cv::waitKey(10);
+		if(key == 27 || key == 'q')
+			break;
 	}
-    return 0;
+	return 0;
 }
